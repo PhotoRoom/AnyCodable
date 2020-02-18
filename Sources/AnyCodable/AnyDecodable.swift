@@ -1,4 +1,5 @@
 import Foundation
+import CoreImage
 
 /**
  A type-erased `Decodable` value.
@@ -10,23 +11,23 @@ import Foundation
  and other collections that require `Decodable` conformance
  by declaring their contained type to be `AnyDecodable`:
 
-     let json = """
-     {
-         "boolean": true,
-         "integer": 1,
-         "double": 3.14159265358979323846,
-         "string": "string",
-         "array": [1, 2, 3],
-         "nested": {
-             "a": "alpha",
-             "b": "bravo",
-             "c": "charlie"
-         }
-     }
-     """.data(using: .utf8)!
+ let json = """
+ {
+ "boolean": true,
+ "integer": 1,
+ "double": 3.14159265358979323846,
+ "string": "string",
+ "array": [1, 2, 3],
+ "nested": {
+ "a": "alpha",
+ "b": "bravo",
+ "c": "charlie"
+ }
+ }
+ """.data(using: .utf8)!
 
-     let decoder = JSONDecoder()
-     let dictionary = try! decoder.decode([String: AnyCodable].self, from: json)
+ let decoder = JSONDecoder()
+ let dictionary = try! decoder.decode([String: AnyCodable].self, from: json)
  */
 public struct AnyDecodable: Decodable {
     public let value: Any
@@ -66,6 +67,8 @@ extension _AnyDecodable {
         } else if let double = try? container.decode(Double.self) {
             self.init(double)
         } else if let string = try? container.decode(String.self) {
+            self.init(string)
+        } else if let string = try? container.decode(CIColor.self) {
             self.init(string)
         } else if let array = try? container.decode([AnyCodable].self) {
             self.init(array.map { $0.value })
@@ -107,6 +110,8 @@ extension AnyDecodable: Equatable {
         case let (lhs as Float, rhs as Float):
             return lhs == rhs
         case let (lhs as Double, rhs as Double):
+            return lhs == rhs
+        case let (lhs as CIColor, rhs as CIColor):
             return lhs == rhs
         case let (lhs as String, rhs as String):
             return lhs == rhs

@@ -1,4 +1,5 @@
 import Foundation
+import CoreImage
 
 /**
  A type-erased `Codable` value.
@@ -53,6 +54,8 @@ extension AnyCodable: Equatable {
         case let (lhs as Float, rhs as Float):
             return lhs == rhs
         case let (lhs as Double, rhs as Double):
+            return lhs == rhs
+        case let (lhs as CIColor, rhs as CIColor):
             return lhs == rhs
         case let (lhs as String, rhs as String):
             return lhs == rhs

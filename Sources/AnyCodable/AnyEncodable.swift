@@ -1,4 +1,5 @@
 import Foundation
+import CoreImage
 
 /**
  A type-erased `Encodable` value.
@@ -10,21 +11,21 @@ import Foundation
  and other collections that require `Encodable` conformance
  by declaring their contained type to be `AnyEncodable`:
 
-     let dictionary: [String: AnyEncodable] = [
-         "boolean": true,
-         "integer": 1,
-         "double": 3.14159265358979323846,
-         "string": "string",
-         "array": [1, 2, 3],
-         "nested": [
-             "a": "alpha",
-             "b": "bravo",
-             "c": "charlie"
-         ]
-     ]
+ let dictionary: [String: AnyEncodable] = [
+ "boolean": true,
+ "integer": 1,
+ "double": 3.14159265358979323846,
+ "string": "string",
+ "array": [1, 2, 3],
+ "nested": [
+ "a": "alpha",
+ "b": "bravo",
+ "c": "charlie"
+ ]
+ ]
 
-     let encoder = JSONEncoder()
-     let json = try! encoder.encode(dictionary)
+ let encoder = JSONEncoder()
+ let json = try! encoder.encode(dictionary)
  */
 public struct AnyEncodable: Encodable {
     public let value: Any
@@ -94,6 +95,8 @@ extension _AnyEncodable {
             try container.encode(date)
         case let url as URL:
             try container.encode(url)
+        case let color as CIColor:
+            try container.encode(color)
         case let array as [Any?]:
             try container.encode(array.map { AnyCodable($0) })
         case let dictionary as [String: Any?]:
@@ -129,10 +132,10 @@ extension _AnyEncodable {
             try container.encode(nsnumber.floatValue)
         case .doubleType, .float64Type, .cgFloatType:
             try container.encode(nsnumber.doubleValue)
-        #if swift(>=5.0)
-            @unknown default:
-                fatalError()
-        #endif
+            #if swift(>=5.0)
+        @unknown default:
+            fatalError()
+            #endif
         }
     }
     #endif
