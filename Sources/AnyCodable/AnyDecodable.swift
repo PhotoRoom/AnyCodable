@@ -68,8 +68,8 @@ extension _AnyDecodable {
             self.init(double)
         } else if let string = try? container.decode(String.self) {
             self.init(string)
-        } else if let string = try? container.decode(CIColor.self) {
-            self.init(string)
+        } else if let color = try? container.decode(CIColorCodableWrapper.self) {
+            self.init(color.ciColor)
         } else if let array = try? container.decode([AnyCodable].self) {
             self.init(array.map { $0.value })
         } else if let dictionary = try? container.decode([String: AnyCodable].self) {

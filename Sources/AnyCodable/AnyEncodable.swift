@@ -96,7 +96,8 @@ extension _AnyEncodable {
         case let url as URL:
             try container.encode(url)
         case let color as CIColor:
-            try container.encode(color)
+            let wrapped = CIColorCodableWrapper(ciColor: color)
+            try container.encode(wrapped)
         case let array as [Any?]:
             try container.encode(array.map { AnyCodable($0) })
         case let dictionary as [String: Any?]:
